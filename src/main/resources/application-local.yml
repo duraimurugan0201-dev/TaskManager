@@ -1,0 +1,10 @@
+# Local/developer configuration — GITIGNORED, never commit this file.
+# Activated by default via spring.profiles.default: local in application.yml.
+#
+# MongoDB Atlas connection. Override MONGODB_URI to point elsewhere
+# (e.g. a local mongod) without touching this file.
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb+srv://duraimurugan0201_db_user:gQWn58kjhrMIJv27@dbserver.pjxxr7k.mongodb.net/task_manager?retryWrites=true&w=majority}
+      auto-index-creation: true

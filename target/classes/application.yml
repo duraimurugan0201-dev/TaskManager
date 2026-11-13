@@ -1,0 +1,56 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: task-manager-backend
+  profiles:
+    # Loads the gitignored application-local.yml (Atlas connection) by default.
+    # Override with SPRING_PROFILES_ACTIVE=test|prod or set MONGODB_URI directly.
+    default: local
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb+srv://duraimurugan0201_db_user:gQWn58kjhrMIJv27@dbserver.pjxxr7k.mongodb.net/task_manager}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  mvc:
+    problemdetails:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  jwt:
+    # MUST be at least 32 bytes. Override in every real environment.
+    secret: ${JWT_SECRET:dev-only-change-me-secret-key-0123456789abcdef}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:1440}
+  admin:
+    # Bootstrap admin created on first startup only (if the username is free).
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:Admin@12345}
+    name: ${ADMIN_NAME:System Administrator}
+    phone: ${ADMIN_PHONE:9000000000}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+
+logging:
+  level:
+    com.taskmanager: INFO
+    org.springframework.security: WARN

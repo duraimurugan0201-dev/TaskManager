@@ -1,0 +1,20 @@
+spring:
+  data:
+    mongodb:
+      uri: ${TEST_MONGODB_URI:mongodb://localhost:27017/task_manager_test}
+      auto-index-creation: true
+
+app:
+  jwt:
+    secret: test-only-secret-key-at-least-32-bytes-long-000
+    expiration-minutes: 60
+  admin:
+    username: admin
+    password: Admin@12345
+    name: Test Administrator
+    phone: "9000000000"
+
+logging:
+  level:
+    com.taskmanager: WARN
+    org.springframework.data.mongodb.core.MongoTemplate: WARN

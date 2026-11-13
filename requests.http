@@ -1,0 +1,140 @@
+### Task Manager API — sample requests
+### Works with IntelliJ HTTP Client / VS Code REST Client.
+### Run the app first: mvn spring-boot:run
+
+@baseUrl = http://localhost:8080
+@adminUsername = admin
+@adminPassword = Admin@12345
+
+### 1. Login as admin (captures token)
+# @name adminLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{adminUsername}}",
+  "password": "{{adminPassword}}"
+}
+
+> {%
+    client.global.set("adminToken", response.body.data.accessToken);
+%}
+
+### 2. Current admin profile
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{adminToken}}
+
+### 3. Admin creates a user
+# @name createUser
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "username": "john.doe",
+  "password": "Password@123",
+  "name": "John Doe",
+  "phoneNumber": "9876543210",
+  "email": "john.doe@example.com",
+  "roles": ["USER"]
+}
+
+> {%
+    client.global.set("userId", response.body.data.id);
+%}
+
+### 4. Admin lists / searches users
+GET {{baseUrl}}/api/admin/users?search=john&page=0&size=20
+Authorization: Bearer {{adminToken}}
+
+### 5. Admin fetches one user
+GET {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+
+### 6. Admin disables the user
+PUT {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "enabled": false
+}
+
+### 7. Login as the created user (captures token)
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "john.doe",
+  "password": "Password@123"
+}
+
+> {%
+    client.global.set("userToken", response.body.data.accessToken);
+%}
+
+### 8. User creates a daily task
+# @name createTask
+POST {{baseUrl}}/api/tasks
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Morning workout",
+  "description": "30 minutes cardio",
+  "priority": "HIGH"
+}
+
+> {%
+    client.global.set("taskId", response.body.data.id);
+%}
+
+### 9. User lists tasks (filters optional)
+GET {{baseUrl}}/api/tasks?status=PENDING&page=0&size=20&sort=dueDate,asc
+Authorization: Bearer {{userToken}}
+
+### 10. User's tasks for today
+GET {{baseUrl}}/api/tasks/today
+Authorization: Bearer {{userToken}}
+
+### 11. User fetches one task
+GET {{baseUrl}}/api/tasks/{{taskId}}
+Authorization: Bearer {{userToken}}
+
+### 12. User marks the task complete
+PATCH {{baseUrl}}/api/tasks/{{taskId}}/status
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "status": "COMPLETED"
+}
+
+### 13. User edits the task
+PUT {{baseUrl}}/api/tasks/{{taskId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Evening workout",
+  "priority": "LOW"
+}
+
+### 14. Admin fetches the user's tasks
+GET {{baseUrl}}/api/admin/users/{{userId}}/tasks?page=0&size=20
+Authorization: Bearer {{adminToken}}
+
+### 15. User deletes the task
+DELETE {{baseUrl}}/api/tasks/{{taskId}}
+Authorization: Bearer {{userToken}}
+
+### 16. Admin deletes the user (cascades tasks)
+DELETE {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+
+### 17. Unauthenticated request (expect 401)
+GET {{baseUrl}}/api/tasks
+
+### 18. OpenAPI document
+GET {{baseUrl}}/v3/api-docs
